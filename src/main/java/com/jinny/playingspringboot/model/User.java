@@ -6,11 +6,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+@Builder
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id // primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +22,9 @@ public class User {
     private String password;
     private String email;
     private String role; //ROLE_USER, ROLE_ADMIN
+
+    private String provider;
+    private String providerId;
     @CreationTimestamp
     private Timestamp createDate;
 }

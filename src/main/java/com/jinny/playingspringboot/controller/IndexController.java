@@ -1,11 +1,16 @@
 package com.jinny.playingspringboot.controller;
 
+import com.jinny.playingspringboot.config.auth.PrincipalDetails;
 import com.jinny.playingspringboot.model.User;
 import com.jinny.playingspringboot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +23,43 @@ class IndexController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @GetMapping("/test/login")
+    @ResponseBody
+    public String testLogin(
+            Authentication authentication,
+            @AuthenticationPrincipal UserDetails userDetails){
+        System.out.println("/test/login==============");
+        PrincipalDetails principalDetails = (PrincipalDetails)authentication.getPrincipal();
+        System.out.println("authentication" + principalDetails.getUser());
+
+        System.out.println(userDetails.getUsername());
+        return "세션정보 확인하기";
+    }
+
+    @GetMapping("/test/oauth/login")
+    @ResponseBody
+    public String testOauthLogin(
+            Authentication authentication,
+            @AuthenticationPrincipal OAuth2User oauth2){
+        System.out.println("/test/oauth/login==============");
+        OAuth2User oAuth2User = (OAuth2User)authentication.getPrincipal();
+        System.out.println("authentication" + oAuth2User.getAttributes());
+
+        System.out.println("OAuth2User :" + oauth2.getAttributes());
+        return "OAuth세션정보 확인하기";
+    }
+
     @GetMapping({"","/"})
     public String index(){
         return "index";
     }
 
+    //OAuth 로그인을 해도 PrincipalDetails
+    //일반 로그인을 해도 PrincipalDetails
     @GetMapping("/user")
-    public String user(){
+    @ResponseBody
+    public String user(@AuthenticationPrincipal PrincipalDetails principal) {
+        System.out.println("Principal : " + principal);
         return "user";
     }
 

@@ -6,19 +6,37 @@ package com.jinny.playingspringboot.config.auth;
 //User오브젝트타입은 UserDetails타입 객체이어야 한다.
 
 import com.jinny.playingspringboot.model.User;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
+@Data
 //즉, 시큐리티가 가지고 있는 세션에 세션 정보를 저장할 수 있는 객체는 Authentication이며,이 객체 안에 저장할 수 있는 User정보는 UserDetails타입이다.
-public class PrincipalDetails implements UserDetails {
+public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private User user; //콤포지션
+    private Map<String, Object> attributes;
 
+    //일반로그인
     public PrincipalDetails(User user){
         this.user = user;
+    }
+
+    //OAuth로그인
+    public PrincipalDetails(User user, Map<String,Object> attributes){
+        this.user = user;
+        this.attributes = attributes;
+    }
+
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
     }
 
     //해당 유저의 권한을 리턴
@@ -66,5 +84,10 @@ public class PrincipalDetails implements UserDetails {
         //'현재시간 - 로그인 시간'을 계산해서
         //return false;를 하면 됨.
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return null;
     }
 }
