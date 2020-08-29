@@ -3,6 +3,8 @@ package com.jinny.playingspringboot.controller;
 import com.jinny.playingspringboot.model.User;
 import com.jinny.playingspringboot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -27,13 +29,13 @@ class IndexController {
     }
 
     @GetMapping("/admin")
-    public String admin(){
-        return "admin";
+    public @ResponseBody String admin(){
+        return "어드민페이지입니다.";
     }
 
     @GetMapping("/manager")
-    public String manager(){
-        return "manager";
+    public @ResponseBody String manager() {
+        return "매니저 페이지입니다.";
     }
 
     @GetMapping("/loginForm")
@@ -62,6 +64,21 @@ class IndexController {
         userRepository.save(user); //회원가입 잘 됨
         return "redirect:/loginForm";
     }
+
+    @Secured("ROLE_ADMIN")
+    @GetMapping("/info")
+    @ResponseBody
+    public String info(){
+        return "개인정보";
+    }
+
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')") //함수가 끝나고 난 후
+    @GetMapping("/data")
+    @ResponseBody
+    public String data(){
+        return "data페이지";
+    }
+
 /*    @GetMapping("hello-mvc")
     public String helloMvc(@RequestParam("name") String name, Model model){
         model.addAttribute("name", name);
